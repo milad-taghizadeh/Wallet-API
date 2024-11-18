@@ -17,20 +17,13 @@ datasource db {
 model User {
   id String @id @default(uuid()) @db.Uuid
 
-  firstName String? @map("first_name")
-  lastName  String? @map("last_name")
-  email     String? @unique
-  phone     String  @unique
-
-  status     userStatus @map("status")
-  // userState userState @map("user_state")
-  discountId Int?
+  fullName String?  @map("full_name")
+  phone    String   @unique
+  balance  Float    @default(0)
+  Wallets  Wallet[]
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now()) @updatedAt()
-  Comment   Comment[]
-  Discount  Discount? @relation(fields: [discountId], references: [id])
-  Basket    Basket[]
 
   @@map("user")
 }
@@ -49,81 +42,16 @@ model Otp {
   @@map("otp")
 }
 
-model Product {
+model Wallet {
   id String @id @default(uuid()) @db.Uuid
 
-  productName String @map("product_name")
-  productCode String @unique @map("product_code")
-
-  price       String
-  finalPrice  String        @map("final_price")
-  detail      String[]
-  color       String[]
-  images      String
-  cover       String
-  qty         Int
-  description String
-  status      productStatus
-  categoryId  Int?
-  Comment     Comment[]
-  basket      Basket[]
-
-  Category  Category? @relation(fields: [categoryId], references: [id])
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @default(now()) @updatedAt
-}
-
-model Comment {
-  id        Int    @id @default(autoincrement())
-  userId    String @db.Uuid
-  productId String @db.Uuid
-
-  userID    User    @relation(fields: [userId], references: [id])
-  productID Product @relation(fields: [productId], references: [id])
+  type          walletType
+  currency      String     @default("USD")
+  invoiceNumber String     @map("invoice_number")
+  user          User       @relation(fields: [userId], references: [id])
+  userId        String     @db.Uuid
 
   createdAt DateTime? @default(now())
-  updatedAt DateTime? @default(now()) @updatedAt
-}
-
-model Category {
-  id Int @id @default(autoincrement())
-
-  name      String    @unique
-  productID Product[]
-
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @default(now()) @updatedAt
-}
-
-model Discount {
-  id Int @id @default(autoincrement())
-
-  percentage   Int?
-  reducePrice  Int?         @map("reduce_price")
-  discountMode discountMode @map("discount_mode")
-  expiresAt    DateTime     @map("expires_at")
-  value        String
-
-  userID User[]
-
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @default(now()) @updatedAt
-  Basket    Basket[]
-}
-
-model Basket {
-  id String @id @default(uuid()) @db.Uuid
-
-  userId     String    @db.Uuid
-  discountId Int?
-  totalPrice Int?      @map("total_price")
-  ProductID  Product   @relation(fields: [productId], references: [id])
-  productId  String    @db.Uuid
-  userID     User      @relation(fields: [userId], references: [id])
-  discount   Discount? @relation(fields: [discountId], references: [id])
-
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @default(now()) @updatedAt
 }
 
 enum userStatus {
@@ -134,9 +62,9 @@ enum userStatus {
   TERMINATED
 }
 
-enum discountMode {
-  PERCENTAGE
-  REDUCE_PRICE
+enum walletType {
+  DEPOSIT
+  WITHDRAW
 }
 
 enum productStatus {

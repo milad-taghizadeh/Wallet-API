@@ -7,10 +7,10 @@ import { UpdateUserDto } from './dto/update-user.dto';
 export class UserService {
   constructor(private readonly userRepository: UserRepository) {}
 
-  async createUser(createUserDto: CreateUserDto): Promise<any> {
-    const user = await this.userRepository.create(createUserDto);
-    return user;
-  }
+  // async createUser(createUserDto: CreateUserDto): Promise<any> {
+  //   const user = await this.userRepository.create(createUserDto);
+  //   return user;
+  // }
 
   async findAll(): Promise<any[]> {
     const users = await this.userRepository.findMany({});

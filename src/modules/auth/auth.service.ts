@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Scope, ServiceUnavailableException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Scope,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 
 import { TokenService } from './token.service';
 import { UserRepository } from '../user/user.repository';
@@ -55,7 +60,6 @@ export class AuthService {
     await this.otpRepository.update(dbOtp.id, { isUsed: true });
 
     if (data.userType == AuthUserType.Guest) {
-
       const user = await this.userRepository.findByPhone(data.phoneNumber);
 
       if (user) {
@@ -64,17 +68,15 @@ export class AuthService {
         const user = await this.userRegister(data.phoneNumber);
         return this.tokenService.createOtpToken({ UserId: user.id });
       }
-    }else throw new ServiceUnavailableException(ServerMessages.SERVICE_UNAVAILABLE)
+    } else
+      throw new ServiceUnavailableException(ServerMessages.SERVICE_UNAVAILABLE);
   }
 
   private async userRegister(phoneNumber: string): Promise<User> {
     return await this.userRepository.create({
       phone: phoneNumber,
-      email: null,
-      firstName: null,
-      lastName: null,
-      discountId: null,
-      status:'NOT_VALIDATED'
+      fullName: '',
+      balance: 0,
     });
   }
 }
